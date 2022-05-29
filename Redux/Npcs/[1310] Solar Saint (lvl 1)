@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Redux.Packets.Game;
+using Redux.Enum;
+
+namespace Redux.Npcs
+{
+    /// <summary>
+    /// Handles NPC usage for [1310] Solar Saint
+    /// </summary>
+    public class NPC_1310 : INpc
+    {
+
+        public NPC_1310(Game_Server.Player _client)
+            :base (_client)
+    	{
+            ID = 1310;	
+			Face = 6;    
+    	}
+
+        public override void Run(Game_Server.Player _client, ushort _linkback)
+        {
+            Responses = new List<NpcDialogPacket>();
+            AddAvatar();
+            switch (_linkback)
+            {
+                case 0:
+                    if(Common.DIS_CITY == null )                    
+                        _client.ChangeMap(1020);
+                    else if (_client.HasItem(723085, 5))
+                    {
+                        AddText("You have the stones we need? Perfect! Let me know when you are ready and we will use them to break through to the next level");
+                        AddOption("I'm ready", 1);
+                        AddOption("One moment...", 255);
+                    }
+                    else
+                    {
+                        AddText("Hurry up! We don't have much time. Bring me 5 SoulStones so we can break through");
+                        AddOption("On my way.", 255);
+
+                    }
+                    break;
+
+                case 1:
+                    if (Common.DIS_CITY != null&&_client.HasItem(723085, 5))
+                    {
+                        for (var i = 0; i < 5; i++)
+                            _client.DeleteItem(723085);
+                        if (!_client.Tasks.ContainsKey(TaskType.DisCity))
+                            _client.Tasks.TryAdd(TaskType.DisCity, new Structures.Task(_client.UID, TaskType.DisCity, DateTime.Now));
+                        _client.Tasks[TaskType.DisCity].Count = 0;
+
+                        switch(_client.ProfessionType)
+                        {
+                            case ProfessionType.Trojan:
+                                _client.Tasks[TaskType.DisCity].CountReq = 800;
+                                break;
+                            case ProfessionType.Warrior:
+                                _client.Tasks[TaskType.DisCity].CountReq = 900;
+                                break;
+                            case ProfessionType.Archer:
+                                _client.Tasks[TaskType.DisCity].CountReq = 1200;
+                                break;
+                            case ProfessionType.FireTaoist:
+                                _client.Tasks[TaskType.DisCity].CountReq = 1000;
+                                break;
+                            case ProfessionType.WaterTaoist:
+                                _client.Tasks[TaskType.DisCity].CountReq = 600;
+                                break;
+                        }
+
+                        //add half exp ball
+                        _client.GainExpBall(300);
+                        _client.ChangeMap(2022, 221, 336);
+                        AddText("We made it! Destroy their forces and we can get to their generals. Return to me when you're ready to move on.");
+                        AddOption("They will die!", 255);
+                    }
+                    break;
+            }
+            AddFinish();
+            Send();
+        }
+    }
+}
