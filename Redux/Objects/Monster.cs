@@ -146,6 +146,23 @@ namespace Redux.Game_Server
                         p.GainExperience(bonusexp);
                         p.SendMessage("Congratulations you have gained " + bonusexp * Constants.EXP_RATE + " team experience!", ChatType.System);                         
                     }
+                     if (Common.DIS_CITY != null && killer.MapID == 2022 && killer.Tasks.ContainsKey(TaskType.DisCity))
+                {
+                    if (killer.Tasks[TaskType.DisCity].Count > killer.Tasks[TaskType.DisCity].CountReq)
+                        killer.SendMessage("You are ready to advance to the next floor! Talk to SolarSaint to leave this place.");
+                    else
+                    {
+                        killer.Tasks[TaskType.DisCity].Count++;
+                        if (killer.Team != null)
+                        {
+                            foreach (var member in killer.Team.Members)
+                                if (member.Tasks.ContainsKey(TaskType.DisCity) && member != killer)
+                                    member.Tasks[TaskType.DisCity].Count++;
+                            if (killer.Team.Leader != killer && killer.Team.Leader.Tasks.ContainsKey(TaskType.DisCity))
+                                killer.Team.Leader.Tasks[TaskType.DisCity].Count++;
+                        }
+                    }
+                }
             }
             base.Kill(_dieType, _attacker);
         }
