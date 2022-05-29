@@ -30,7 +30,16 @@ namespace Redux.Threading
                 {
                     _nextTrigger = curr + THREAD_SPEED;
                 }
-
+         //start dis city
+                    if (Events.DisCity.DIS_CITY_DAYS.Contains(DateTime.Now.DayOfWeek) && DateTime.Now.Hour == Events.DisCity.DIS_CITY_HOUR)
+                    {
+                        if (DateTime.Now.Minute == 0)
+                            Common.DIS_CITY = new Events.DisCity();
+                        else if (Common.DIS_CITY != null && DateTime.Now.Minute >= 15 && Common.DIS_CITY.CanEnter)
+                            Common.DIS_CITY.DisableEntry();
+                    }
+                    else if (Common.DIS_CITY != null)
+                        Common.DIS_CITY.End();
                 //Run managers
                 PlayerManager.PlayerManager_Tick();
 
