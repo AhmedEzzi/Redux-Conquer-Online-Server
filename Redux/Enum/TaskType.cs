@@ -11,6 +11,7 @@ namespace Redux.Enum
         CloudSaint,
         MonsterExterminator,
         Lottery,
+        DisCity,
         UnknownMan,
     }
 }
