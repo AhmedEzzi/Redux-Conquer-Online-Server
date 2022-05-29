@@ -34,6 +34,7 @@ namespace Redux
         }
 
         #region Variables
+        public static Events.DisCity DIS_CITY;// access to Discity
         public static ThreadSafeCounter ItemGenerator;
         public static int offset = 40;
         public static int value = 5;
